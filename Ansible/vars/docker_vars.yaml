@@ -1,0 +1,5 @@
+image_name: "petstore-app"
+tag_name: "latest"
+container_name: "petstore_web_app"
+container_port_mapping: "8080:8080"
+docker_user: chudocker23
