@@ -1,0 +1,20 @@
+# Start from a minimal Python 3.11 image
+FROM python:3.11-slim
+
+# Set environment variables to prevent interactive prompts during apt-get installs
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update apt, install tools needed for Docker CLI installation and the docker.io package
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    gnupg \
+    lsb-release \
+    docker.io && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Ansible and the required Python Docker SDK (using pip for a cleaner install)
+RUN pip install --no-cache-dir ansible "docker>=5.0.0" community.docker
+
+# Set the default command to bash so that Jenkins can easily run subsequent 'sh' steps inside it
+CMD ["/bin/bash"]
