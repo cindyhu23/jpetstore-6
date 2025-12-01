@@ -1,5 +1,5 @@
 # Start from Python 3.12 (as version 13.x of community.docker requires >=3.12)
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 # Set environment variables to prevent interactive prompts during apt-get installs
 ENV DEBIAN_FRONTEND=noninteractive
@@ -18,7 +18,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Ansible and the required Python Docker SDK (using pip)
-RUN pip install --no-cache-dir ansible "docker>=5.0.0" community.docker
+RUN pip install --no-cache-dir ansible community.docker
 
 # Set the default command to bash so that Jenkins can easily run subsequent 'sh' steps inside it
 CMD ["/bin/bash"]
