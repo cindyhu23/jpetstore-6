@@ -18,7 +18,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Ansible and the required Python Docker SDK (using pip)
-RUN pip install --no-cache-dir ansible community.docker
+RUN pip install --no-cache-dir ansible docker && \
+    ansible-galaxy collection install community.docker
 
 # Set the default command to bash so that Jenkins can easily run subsequent 'sh' steps inside it
 CMD ["/bin/bash"]
