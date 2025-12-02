@@ -1,2 +1,4 @@
 [docker_host]
 localhost ansible_connection=docker
+[local_host]
+localhost ansible_connection=local
