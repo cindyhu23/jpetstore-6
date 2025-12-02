@@ -1,45 +1,40 @@
 ---
 - name: Build, Push, and Run Docker Image
-  hosts: docker_host
+  hosts: local_host
   gather_facts: false
 
-  # Load variables from the separate YAML file
-  vars_files:
-    - vars/docker_vars.yml
-
-  vars:
-    # These are dynamic variables that combine the static ones and environment variables
-    docker_user: "{{ lookup('env', 'DOCKER_USER') }}"
-    full_image_name: "{{ docker_user }}/{{ image_name }}:{{ tag_name }}"
-
   tasks:
+    - name: Debugging a variable
+      ansible.builtin.debug:
+        var: image_name
+
     - name: Log in to Docker Hub
-      community.docker.docker_login:
+      docker_login:
         username: "{{ docker_user }}"
         password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
 
     - name: Build the application image and push it to Docker Hub
-      community.docker.docker_image:
+      docker_image:
         name: "{{ full_image_name }}"
         build:
-          path: .
+          path: ../petstore
         source: build
         state: present
         push: true
 
     - name: Stop the old container if it exists
-      community.docker.docker_container:
+      docker_container:
         name: "{{ container_name }}"
         state: stopped
       ignore_errors: true # Ignore error if container doesn't exist yet
 
     - name: Remove the old container
-      community.docker.docker_container:
+      docker_container:
         name: "{{ container_name }}"
         state: absent
 
     - name: Run the new container
-      community.docker.docker_container:
+      docker_container:
         name: "{{ container_name }}"
         image: "{{ full_image_name }}"
         state: started
