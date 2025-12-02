@@ -20,7 +20,7 @@ RUN groupadd -r ansible -g 1000 && \
     chown -R ansible:ansible /home/ansible
 
 # Install Ansible and the required Python Docker SDK (using pip)
-USER root
+#USER root
 # Install Ansible using pip
 RUN pip install ansible
 
