@@ -1,25 +1,33 @@
-# Start from Python 3.12 (as version 13.x of community.docker requires >=3.12)
+# Use an official Python runtime as a base image, as Ansible requires Python
 FROM python:3.14-slim
 
-# Set environment variables to prevent interactive prompts during apt-get installs
-ENV DEBIAN_FRONTEND=noninteractive
+# Set the working directory
+WORKDIR /app
 
-# Update apt, install system dependencies needed for Docker CLI, and build tools
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+# Install system dependencies
+# This includes curl, which is needed to download the docker CLI binary, 
+# and other build essentials.
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    gnupg \
-    lsb-release \
-    docker.io \
+    gnupg2 \
     build-essential \
-    libssl-dev \
-    libffi-dev \
-    python3-dev && \
-    rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Ansible and the required Python Docker SDK (using pip)
-RUN pip install --no-cache-dir ansible docker && \
-    ansible-galaxy collection install community.docker
+# Install Ansible using pip
+RUN pip install ansible
+
+# Install the Docker CLI client using a static binary (this avoids installing the full Docker daemon)
+# Ensure to check for the latest stable version on the Docker website
+ENV DOCKER_VERSION=24.0.7
+RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz \
+    && tar xzvf docker-${DOCKER_VERSION}.tgz --strip 1 -C /usr/local/bin docker/docker \
+    && rm docker-${DOCKER_VERSION}.tgz
+
+# Install the Docker SDK for Python, which is required for Ansible's docker modules
+RUN pip install docker
+
+# Optional: Add a default command or entrypoint
+#CMD ["ansible", "--version"]
 
 # Set the default command to bash so that Jenkins can easily run subsequent 'sh' steps inside it
 CMD ["/bin/bash"]
