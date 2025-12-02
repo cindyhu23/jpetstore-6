@@ -1,6 +1,6 @@
 ---
 - name: Build, Push, and Run Docker Image
-  hosts: local_host
+  hosts: docker_host
   gather_facts: false
 
   tasks:
