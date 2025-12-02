@@ -14,17 +14,17 @@
       ansible.builtin.debug:
         msg: "You executed the playbook from: {{ lookup('env', 'PWD') }}"         
 
-    #- name: Log in to Docker Hub
-    #  docker_login:
-    #    username: "{{ docker_user }}"
-    #    password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
+    - name: Log in to Docker Hub
+      docker_login:
+        username: "{{ docker_user }}"
+        password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
 
     #- name: build docker image
     #  ansible.builtin.command:
     #    cmd: docker build -t {{ full_image_name }} .
     #    chdir: "{{ playbook_dir }}/../.."
 
-    - name: Build the application image and push it to Docker Hub
+    - name: Build the application image
       docker_image:
         name: "{{ full_image_name }}"
         build:
@@ -32,7 +32,7 @@
           dockerfile: Dockerfile
         source: build
         state: present
-        push: true
+        push: false
 
     - name: Stop the old container if it exists
       docker_container:
