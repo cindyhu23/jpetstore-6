@@ -17,7 +17,7 @@
       docker_image:
         name: "{{ full_image_name }}"
         build:
-          path: ../petstore
+          path: .
         source: build
         state: present
         push: true
