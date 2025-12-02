@@ -13,9 +13,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Add a specific user 'ansible' with a specific UID (1000 is default for many Jenkins agents)
-RUN groupadd -r ansible -g 1000 && useradd -r -g ansible -u 1000 -s /bin/bash ansible
+# Add a specific user 'ansible' with a specific UID (1000) and ensure the home dir exists
+RUN groupadd -r ansible -g 1000 && \
+    useradd -r -g ansible -u 1000 -s /bin/bash -m ansible && \
+    # The -m flag (create home directory if it doesn't exist) should fix this, but we add chown for safety:
+    chown -R ansible:ansible /home/ansible
 
+# Install Ansible and the required Python Docker SDK (using pip)
+USER root
 # Install Ansible using pip
 RUN pip install ansible
 
@@ -28,6 +33,9 @@ RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-${
 
 # Install the Docker SDK for Python, which is required for Ansible's docker modules
 RUN pip install docker
+
+# Switch the user context in the image back to 'ansible' for runtime
+USER ansible
 
 # Optional: Add a default command or entrypoint
 #CMD ["ansible", "--version"]
