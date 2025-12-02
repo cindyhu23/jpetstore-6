@@ -1,0 +1,7 @@
+
+image_name: "petstore-app"
+tag_name: "default"
+container_name: "petstore_cindy"
+container_port_mapping: "9091:8080"
+docker_user: chudocker23
+full_image_name: "{{ docker_user }}/{{ image_name }}:{{ tag_name }}"
