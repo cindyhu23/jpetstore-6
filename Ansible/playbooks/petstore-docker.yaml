@@ -6,18 +6,30 @@
   tasks:
     - name: Debugging a variable
       ansible.builtin.debug:
-        var: image_name
+        var: full_image_name
+    - name: Debug the playbook directory
+      ansible.builtin.debug:
+        msg: "The playbook is located in: {{ playbook_dir }}" 
+    - name: Debug the current working directory
+      ansible.builtin.debug:
+        msg: "You executed the playbook from: {{ lookup('env', 'PWD') }}"         
 
-    - name: Log in to Docker Hub
-      docker_login:
-        username: "{{ docker_user }}"
-        password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
+    #- name: Log in to Docker Hub
+    #  docker_login:
+    #    username: "{{ docker_user }}"
+    #    password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
+
+    #- name: build docker image
+    #  ansible.builtin.command:
+    #    cmd: docker build -t {{ full_image_name }} .
+    #    chdir: "{{ playbook_dir }}/../.."
 
     - name: Build the application image and push it to Docker Hub
       docker_image:
         name: "{{ full_image_name }}"
         build:
-          path: .
+          path: "{{ playbook_dir }}/../.."
+          dockerfile: Dockerfile
         source: build
         state: present
         push: true
